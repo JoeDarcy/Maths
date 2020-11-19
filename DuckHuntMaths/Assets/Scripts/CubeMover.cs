@@ -82,11 +82,13 @@ public class CubeMover : MonoBehaviour
         }
         //calculate velocity based off accelleration
         Velocity += calculateVelocity( Acceleration, Time.deltaTime);
+
         //change in displacement is velocity multiplied by time
         //position + change in displacement is the new position
         Vec3 displacement = calculateDisplacement(Velocity , Time.deltaTime);
         Debug.Log(displacement.ToString());
         position += displacement;
+
         //set positon variable back into transform.position
         transform.position = position.ToVector3();
     
