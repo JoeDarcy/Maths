@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class CannonLauncher : MonoBehaviour {
     //publicly modifiable variables
@@ -15,13 +17,29 @@ public class CannonLauncher : MonoBehaviour {
 
     private bool simulate = false;
 
+    //variables that relate to drawing the path of the projectile
+    private List<Vec3> pathPoints;      //list of points along the path of the vector for drawing line of travel
+    private int simulationSteps = 30;   //number of points on the path of projectile to draw
+
     // Start is called before the first frame update
     void Start() {
+        //initialise path vector for drawing
+        pathPoints = new List<Vec3>();
         calculateProjectile();
+        calculatePath();
     }
 
     // Update is called once per frame
     void Update() {
+
+        // Draw path of projectile when not in play mode too
+        if (simulate == false) {
+            pathPoints = new List<Vec3>();
+            calculateProjectile();
+            calculatePath();
+        }
+
+        drawPath();
 
         if (Input.GetKeyDown(KeyCode.Space) && simulate == false) {
 
@@ -54,11 +72,36 @@ public class CannonLauncher : MonoBehaviour {
 
     }
 
+    private void calculatePath() {
+        Vec3 launchPos = new Vec3(transform.position);
+        pathPoints.Add(launchPos);
+
+        for(int i = 0; i <= simulationSteps; i++) {
+
+            float simTime = (i / (float)simulationSteps) * airTime;
+
+            //suvat formular for displacement s = ut + 1/2at^2
+            Vec3 displacement = v3InitialVelocity * simTime + v3Acceleration * simTime * simTime * 0.5f;
+            Vec3 drawPoint = launchPos + displacement;
+
+            pathPoints.Add(drawPoint);
+        }
+    }
+
+    void drawPath() {
+
+        for (int i = 0; i < pathPoints.Count - 1; i++) {
+
+            Debug.DrawLine(pathPoints[i].ToVector3(), pathPoints[i + 1].ToVector3(), Color.green);
+        }
+    }
+
+
     private void FixedUpdate() {
 
         if (simulate) {
 
-            Vec3 currentPos = new Vec3(transform.position); //issue here with Vec3 ------------
+            Vec3 currentPos = new Vec3(transform.position); 
 
             //work out current velocity
             v3CurrentVelocity += v3Acceleration * Time.deltaTime;
