@@ -7,6 +7,7 @@ public class Vec3
     public float x = 0f;
     public float y = 0f;
     public float z = 0f;
+    
 
     public Vec3(){
         x = 0f; y = 0f; z = 0f;
@@ -14,6 +15,9 @@ public class Vec3
 
     public Vec3( float a_x, float a_y, float a_z){
         x = a_x; y = a_y; z = a_z;
+    }
+
+    public Vec3(Vector3 position) {
     }
 
     //convert from our Vec2 custom data structure to Unity's Vector3 data structure
