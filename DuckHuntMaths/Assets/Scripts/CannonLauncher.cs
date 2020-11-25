@@ -9,8 +9,8 @@ public class CannonLauncher : MonoBehaviour {
     public float Gravity = -9.8f;      //the gravity that effects the projectiles
 
     public Vec3 v3InitialVelocity = new Vec3(); //launch velocity as a vector
-    public Vec3 v3CurrentVelocity = new Vec3(); //current velocity of projectile
-    public Vec3 v3Acceleration;                 //vector quantity for acceleration
+    //public Vec3 v3CurrentVelocity = new Vec3(); //current velocity of projectile
+    private Vec3 v3Acceleration;                 //vector quantity for acceleration
 
     private float airTime = 0f;         //how long will the projectile be in the air
     private float horizontalDisplacement = 0f;   //how far in the horizontal plane will the projectile travel?
@@ -50,7 +50,7 @@ public class CannonLauncher : MonoBehaviour {
             //v3CurrentVelocity = v3InitialVelocity;
 
             GameObject p = Instantiate(projectile, launchPoint.transform.position, launchPoint.transform.rotation);
-            p.GetComponent<Projectile>().SetVeloctiy(v3InitialVelocity);
+            p.GetComponent<Projectile>().SetVelocity(v3InitialVelocity);
             p.GetComponent<Projectile>().SetAcceleration(v3Acceleration);
             p.GetComponent<Projectile>().SetLifeTime(airTime);
         }
@@ -138,7 +138,7 @@ public class CannonLauncher : MonoBehaviour {
         }
     }
 
-
+    /*
     private void FixedUpdate() {
 
         if (simulate) {
@@ -155,5 +155,5 @@ public class CannonLauncher : MonoBehaviour {
 
         }
     }
-
+    */
 }

@@ -354,6 +354,7 @@ GameObject:
   - component: {fileID: 8071187384971992090}
   - component: {fileID: 8071187384971992091}
   - component: {fileID: 8071187384971992092}
+  - component: {fileID: 7790648047391070030}
   m_Layer: 0
   m_Name: Cannon
   m_TagString: Untagged
@@ -2360,3 +2361,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &7790648047391070030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8071187384971992093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d6542d2ac355404cb1221a1581f0e20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  launchVelocity: 10
+  launchAngle: 30
+  Gravity: -9.8
+  projectile: {fileID: 4490521357458833671, guid: 6b2710bdff5b0d241b5eecc4d91b3794,
+    type: 3}
+  launchPoint: {fileID: 8071187383475461901}
