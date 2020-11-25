@@ -13,13 +13,16 @@ public class CannonLauncher : MonoBehaviour {
     public Vec3 v3Acceleration;                 //vector quantity for acceleration
 
     private float airTime = 0f;         //how long will the projectile be in the air
-    private float xDisplacement = 0f;   //how far in the horizontal plane will the projectile travel?
-
-    private bool simulate = false;
+    private float horizontalDisplacement = 0f;   //how far in the horizontal plane will the projectile travel?
 
     //variables that relate to drawing the path of the projectile
     private List<Vec3> pathPoints;      //list of points along the path of the vector for drawing line of travel
     private int simulationSteps = 30;   //number of points on the path of projectile to draw
+
+    public GameObject projectile;       // Game object to instantiate for pthe projectile
+    public GameObject launchPoint;      // Game object to use as the launch point
+
+    private bool simulate = false;
 
     // Start is called before the first frame update
     void Start() {
@@ -44,7 +47,12 @@ public class CannonLauncher : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space) && simulate == false) {
 
             simulate = true;
-            v3CurrentVelocity = v3InitialVelocity;
+            //v3CurrentVelocity = v3InitialVelocity;
+
+            GameObject p = Instantiate(projectile, launchPoint.transform.position, launchPoint.transform.rotation);
+            p.GetComponent<Projectile>().SetVeloctiy(v3InitialVelocity);
+            p.GetComponent<Projectile>().SetAcceleration(v3Acceleration);
+            p.GetComponent<Projectile>().SetLifeTime(airTime);
         }
 
         if (Input.GetKeyDown(KeyCode.R)) {
@@ -56,24 +64,58 @@ public class CannonLauncher : MonoBehaviour {
 
     private void calculateProjectile() {
 
-        //work out velocity as a vector quanity
+        launchAngle = transform.parent.eulerAngles.x;
+
+        // Work out the vertical offset 
+        float launchHeight = launchPoint.transform.position.y;
+
+        // Work out velocity as a vector quanity
+        // The velocity is calculated here from the perspective of the cannon.
+        // In the cannon model that this script is attached to the cannon faces down it's -z axis 
+        v3InitialVelocity.x = 0f;       // Set x value to 0
         v3InitialVelocity.x = launchVelocity * Mathf.Cos(launchAngle * Mathf.Deg2Rad);
         v3InitialVelocity.y = launchVelocity * Mathf.Sin(launchAngle * Mathf.Deg2Rad);
+
+        // v3Velocity is in local space facing down the cannon's -z axis.
+        // Transform that into a world space direction if this step is ommitted 
+        // the projectile will always move in the worlds -z axis.
+        Vector3 txDirection = launchPoint.transform.TransformDirection(v3InitialVelocity.ToVector3());
+        v3InitialVelocity = new Vec3(txDirection);
 
         //gravity as a vec3
         v3Acceleration = new Vec3(0f, Gravity, 0f);
 
         //calculate total air time
-        float finalYVel = 0f;
-        airTime = 2f * (finalYVel - v3InitialVelocity.y) / v3Acceleration.y;
+        // Use quadratic equation to find the air time
+        airTime = UseQuadraticFormula(v3Acceleration.y, v3InitialVelocity.y * 2f, launchHeight * 2f);
+
+        //float finalYVel = 0f;
+        //airTime = 2f * (finalYVel - v3InitialVelocity.y) / v3Acceleration.y;
 
         //calculate the total distance travelled in x
-        xDisplacement = airTime * v3InitialVelocity.x;
+        horizontalDisplacement = airTime * v3InitialVelocity.x;
 
     }
 
+    float UseQuadraticFormula ( float a, float b, float c) {
+
+        // If A is nearly 0 then the formula doesn't really hold true
+        if (0.0001f > Mathf.Abs(a)) {
+            return 0f;
+		}
+
+        float bb = b * b;
+        float ac = a * c;
+        float b4ac = Mathf.Sqrt(bb - 4f * ac);
+        float t1 = (-b + b4ac) / (2f * a);
+        float t2 = (-b - b4ac) / (2f * a);
+        float t = Mathf.Max(t1, t2); // Only return the highest value as one of these may be negative
+        return t;
+    }
+
     private void calculatePath() {
-        Vec3 launchPos = new Vec3(transform.position);
+
+        Vec3 launchPos = new Vec3(launchPoint.transform.position);
         pathPoints.Add(launchPos);
 
         for(int i = 0; i <= simulationSteps; i++) {
