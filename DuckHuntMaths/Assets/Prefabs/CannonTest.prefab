@@ -204,7 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d6542d2ac355404cb1221a1581f0e20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  launchVelocity: 50
+  launchVelocity: 150
   launchAngle: 30
   Gravity: -9.8
   projectile: {fileID: 4490521357458833671, guid: 6b2710bdff5b0d241b5eecc4d91b3794,

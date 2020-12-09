@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CannonLauncher : MonoBehaviour {
+public class ProjectileLauncher : MonoBehaviour {
     // Timer for firing
     private float timer = 3;
 
