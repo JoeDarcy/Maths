@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CannonLauncher : MonoBehaviour {
     // Timer for firing
-    private float timer = 3f;
+    private float timer = 3;
 
     //publicly modifiable variables
     public float launchVelocity = 10f; //the launch velocity of the projectile
