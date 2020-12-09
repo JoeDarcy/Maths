@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CannonLauncher : MonoBehaviour {
+    // Timer for firing
+    private float timer = 3f;
+
     //publicly modifiable variables
     public float launchVelocity = 10f; //the launch velocity of the projectile
     public float launchAngle = 30f;    //the angle the projectile is fired at
@@ -32,36 +35,6 @@ public class CannonLauncher : MonoBehaviour {
         calculatePath();
     }
 
-    // Update is called once per frame
-    void Update() {
-
-        // Draw path of projectile when not in play mode too
-        if (simulate == false) {
-            pathPoints = new List<Vec3>();
-            calculateProjectile();
-            calculatePath();
-        }
-
-        drawPath();
-
-        if (Input.GetKeyDown(KeyCode.Space) && simulate == false) {
-
-            simulate = true;
-            //v3CurrentVelocity = v3InitialVelocity;
-
-            GameObject p = Instantiate(projectile, launchPoint.transform.position, launchPoint.transform.rotation);
-            p.GetComponent<Projectile>().SetVelocity(v3InitialVelocity);
-            p.GetComponent<Projectile>().SetAcceleration(v3Acceleration);
-            p.GetComponent<Projectile>().SetLifeTime(airTime);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R)) {
-
-            simulate = false;
-            transform.position = new Vector3(0f,0f,0f);
-        }
-    }
-
     private void calculateProjectile() {
 
         launchAngle = transform.parent.eulerAngles.x;
@@ -73,7 +46,7 @@ public class CannonLauncher : MonoBehaviour {
         // The velocity is calculated here from the perspective of the cannon.
         // In the cannon model that this script is attached to the cannon faces down it's -z axis 
         v3InitialVelocity.x = 0f;       // Set x value to 0
-        v3InitialVelocity.x = launchVelocity * Mathf.Cos(launchAngle * Mathf.Deg2Rad);
+        v3InitialVelocity.z = launchVelocity * Mathf.Cos(launchAngle * Mathf.Deg2Rad);
         v3InitialVelocity.y = launchVelocity * Mathf.Sin(launchAngle * Mathf.Deg2Rad);
 
         // v3Velocity is in local space facing down the cannon's -z axis.
@@ -97,12 +70,12 @@ public class CannonLauncher : MonoBehaviour {
 
     }
 
-    float UseQuadraticFormula ( float a, float b, float c) {
+    float UseQuadraticFormula(float a, float b, float c) {
 
         // If A is nearly 0 then the formula doesn't really hold true
         if (0.0001f > Mathf.Abs(a)) {
             return 0f;
-		}
+        }
 
         float bb = b * b;
         float ac = a * c;
@@ -118,7 +91,7 @@ public class CannonLauncher : MonoBehaviour {
         Vec3 launchPos = new Vec3(launchPoint.transform.position);
         pathPoints.Add(launchPos);
 
-        for(int i = 0; i <= simulationSteps; i++) {
+        for (int i = 0; i <= simulationSteps; i++) {
 
             float simTime = (i / (float)simulationSteps) * airTime;
 
@@ -138,22 +111,65 @@ public class CannonLauncher : MonoBehaviour {
         }
     }
 
-    /*
-    private void FixedUpdate() {
+    // Update is called once per frame
+    void Update() {
 
-        if (simulate) {
-
-            Vec3 currentPos = new Vec3(transform.position); 
-
-            //work out current velocity
-            v3CurrentVelocity += v3Acceleration * Time.deltaTime;
-
-            //work out displacement
-            Vec3 displacement = v3CurrentVelocity * Time.deltaTime;
-            currentPos += displacement;
-            transform.position = currentPos.ToVector3();
-
+        // Draw path of projectile when not in play mode too
+        if (simulate == false) {
+            
         }
+
+        drawPath();
+
+        if (Input.GetKeyDown(KeyCode.Space) && simulate == false) {
+
+            
+        }
+
+        cannonFiringTimed();
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+
+            simulate = false;
+            transform.position = new Vector3(0f, 0f, 0f);
+        }
+    }
+
+    private void cannonFiringTimed() {
+        timer -= Time.deltaTime;
+
+        if (timer <= 0) {
+            simulate = true;
+            //v3CurrentVelocity = v3InitialVelocity;
+
+            pathPoints.Clear();
+            calculateProjectile();
+            calculatePath();
+
+            // Instantiate at the launch point position, with the current rotation
+            GameObject p = Instantiate(projectile, launchPoint.transform.position, launchPoint.transform.rotation);
+            p.GetComponent<Projectile>().SetVelocity(v3InitialVelocity);
+            p.GetComponent<Projectile>().SetAcceleration(v3Acceleration);
+            p.GetComponent<Projectile>().SetLifeTime(airTime);
+
+            timer = 3f;
+        }
+    }
+
+    /*
+    public void FireProjectile ( Vec3 direction, float a_lifeSpan) {
+
+        transform.rotation = Quaternion.LookRotation(direction.ToVector3());
+
+        pathPoints.Clear();
+        calculateProjectile();
+        calculatePath();
+
+        // Instantiate at the launch point position, with the current rotation
+        GameObject p = Instantiate(projectile, launchPoint.transform.position, launchPoint.transform.rotation);
+        p.GetComponent<Projectile>().Velocity = v3InitialVelocity;
+        p.GetComponent<Projectile>().Acceleration = v3Acceleration;
+        p.GetComponent<Projectile>().LifeSpan = a_lifeSpan;
     }
     */
 }
